@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+
+    <script src="js/vendor/smooth.js"></script>
+    <script src="js/vendor/easing.js"></script>
+    <script src="js/vendor/async.js"></script>
+
+    <!--<script src="js/script.js"></script>-->
+
+    <script src="js/utils.js"></script>
+    <script src="js/gps.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/image.js"></script>
+    <script src="js/adventure.js"></script>
+
+</head>
+<body>
+    <canvas id="overlay"></canvas>
+    <div id="images">
+        <div id="back" class="arrow"><span>Previous day</span></div>
+        <div id="inner-images"></div>
+        <div id="forward" class="arrow"><span>Next day</span></div>
+    </div>
+    <div id="debug"></div>
+    <div id="wrapper">
+        <div id="map"></div>
+    </div>
+    <div id="spacer"></div>
+<!--<script src="https://maps.googleapis.com/maps/api/js?callback=loadGPSdata&libraries=geometry" async defer></script>-->
+<script src="https://maps.googleapis.com/maps/api/js?callback=adventure.init&libraries=geometry" async defer></script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+#debug {
+    position: fixed;
+    top: 10rem;
+    left: 0.7rem;
+    width: 8rem;
+    background-color: white;
+    z-index: 12;
+    padding: 1rem;
+    box-shadow: 0.5rem 0.5rem 1rem rgba(0,0,0,0.5);
+    border-radius: 0.2rem;
+}
+#border {
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-box-shadow: inset 0px 0px 40px 30px rgba(0,0,0,0.75);
+    -moz-box-shadow: inset 0px 0px 32px 16px rgba(0,0,0,0.75);
+    box-shadow: inset 0px 0px 32px 16px rgba(0,0,0,0.75);
+}
+#images {
+    position: fixed;
+    top: 3rem;
+    height: 6rem;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,0.3);
+    z-index: 12;
+}
+#inner-images {
+    position: absolute;
+    left: 0;
+}
+#inner-images img {
+    /*position: absolute;*/
+    /*height: 6rem;*/
+    /*width: auto;*/
+}
+
+.image-wrap {
+    position: absolute;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 1);
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.image-wrap p {
+    position: absolute;
+    bottom: 1rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    display: inline-block;
+    left: 50%;
+    text-align: center;
+    transform: translateX(-50%);
+    padding: 0.2rem 0.3rem;
+    border-radius: 0.2rem;
+    opacity: 0;
+    transition: all 200ms;
+    pointer-events: none;
+}
+
+.image-wrap.active-image p {
+    opacity: 1;
+}
+
+.image-wrap.active-image {
+    /*padding: 1rem 1rem 4rem 1rem;*/
+    /*padding: 1rem;*/
+    /*background-color: rgba(255, 255, 255, 1);*/
+
+    /*position: fixed;*/
+    /*left: 50% !important;*/
+    /*height: auto !important;*/
+    /*transform: translate(-50%, 0);*/
+    /*top: 1rem;*/
+    /*bottom: 1rem;*/
+}
+.image {
+    width: auto;
+    height: 100%;
+}
+
+.active-image {
+    z-index: 10;
+}
+
+.arrow {
+    position: fixed;
+    width: 3.6rem;
+    height: 2rem;
+    background: white;
+    top: 4.8rem;
+    cursor: pointer;
+    z-index: 13;
+}
+.arrow:hover {
+    background: grey;
+}
+.arrow::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 2rem solid transparent;
+    border-bottom: 2rem solid transparent;
+    position: absolute;
+    top: -1rem;
+}
+
+.arrow span {
+    width: 0;
+    overflow: hidden;
+    display: block;
+}
+
+.day.arrow span {
+    width: 100px;
+}
+
+#back {
+    left: 1.8rem;
+}
+#back::before {
+    border-right: 2rem solid white;
+    left: -1rem;
+}
+#back:hover::before {
+    border-right: 2rem solid grey;
+}
+#forward {
+    right: 1.8rem;
+}
+#forward::before {
+    border-left: 2rem solid white;
+    right: -1rem;
+}
+#forward:hover::before {
+    border-left: 2rem solid grey;
+}
+
+#wrapper {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+}
+#map {
+    height: 100%;
+}
+/* Optional: Makes the sample page fill the window. */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.image {
+    cursor: pointer;
+}
+#overlay {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 11;
+    pointer-events: none;
+}

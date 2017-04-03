@@ -1,0 +1,28 @@
+#!/bin/bash
+
+. "/vagrant/setup/helper-functions.sh"
+. "/vagrant/setup/load-variables.sh"
+
+# Make sure DB exists
+RESULT="`mysqlshow ${DB[name]}| grep -v Wildcard | grep -o ${DB[name]}`"
+if [ "$RESULT" != "${DB[name]}" ]; then
+    cl "Error: This script expects a database called ${DB[name]} but that does not exist." -e
+    exit
+fi
+
+# If Drupal clear cache
+if [ "${PROJECT[cms]}" == "drupal" ]; then
+	cd "/var/www/${VAGRANT[hostname]}" && drush cc all
+fi
+
+# Dump db
+DATE=`date +%Y-%m-%d:%H:%M`
+FILE_NAME="${PROJECT[name]}_${DATE}_db.sql.gz"
+BACKUP_PATH="${DB[dump_dir]}/${FILE_NAME}"
+mysqldump --opt "${DB[name]}" | gzip > "$BACKUP_PATH"
+
+if [ -f "$BACKUP_PATH" ]; then
+    cl "Backed up database to $FILE_NAME" -s
+else
+	cl "There was an error backing up the database." -e
+fi

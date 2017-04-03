@@ -1,0 +1,45 @@
+#!/bin/bash
+
+. "/vagrant/setup/helper-functions.sh"
+. "/vagrant/setup/load-variables.sh"
+
+# Make sure DB exists
+if ! mysql -u root -p${DB[root_pass]} -e "use ${DB[name]}" >/dev/null 2>&1; then
+    cl "Error: This script expects a database called ${DB[name]} but that does not exist." -e
+    exit
+fi
+
+
+# Find most recent dump
+# TODO: Stop this line from producing an error when a dump does not exist
+MOST_RECENT=`find "${DB[dump_dir]}" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "`
+
+# Make sure there is a dump to import
+if [ ${#MOST_RECENT} == 0 ]; then
+  cl "No database dumps for this project have been created yet." -e
+  exit
+fi
+
+FILE_NAME=${MOST_RECENT##*/}
+
+importdb() {
+	zcat $1 | mysql  "${DB[name]}"
+	cl "$2 imported sucsesfully" -s
+}
+
+if [[ $* == *-y* ]]; then # check for y flag
+  importdb $MOST_RECENT $FILE_NAME
+else
+
+  # Are you sure?
+  read -r -p $'\e[36m'"This will import $FILE_NAME over the top of your database. Are you sure? [y/N] "$'\e[0m' response
+  case $response in
+      [yY][eE][sS]|[yY])
+          importdb $MOST_RECENT $FILE_NAME
+          ;;
+      *)
+          exit
+          ;;
+  esac
+
+fi

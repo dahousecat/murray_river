@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+
+    <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+
+    <script>
+
+        // Config variables
+        var errorString          = '[ERROR]';
+        var instagramItemCount   = 30;
+        var instagramOffset      = 0;
+        var instagramAccessToken = '1472044048.1677ed0.7b5f81c570754d42bebc3827a3f64c9d';
+        var instagramUserId      = '1472044048';
+        var instagramFeedUrl     = 'https://api.instagram.com/v1/users/' + instagramUserId + '/media/recent/?access_token=' + instagramAccessToken + '&count=' + instagramItemCount;
+        var csv = '';
+
+        var max_id = '1357733612816858732_1472044048';
+        //var max_id = '';
+        if(max_id.length > 0) {
+            instagramFeedUrl = instagramFeedUrl + '&max_id=' + max_id;
+        }
+
+        // Init other variables we will need
+        var instagramItems = [];
+
+        function fetchInstagramFeed (callback) {
+            $.ajax({
+                url: instagramFeedUrl,
+                type: 'GET',
+                dataType: 'jsonp'
+            })
+            // Success callback
+                    .done(function(result) {
+                        // Check for an empty data array in result
+                        if(typeof result.data == 'undefined' || result.data.length < 1) {
+                            console.log('Error, Instagram feed returned 0 results: ', result);
+                            return;
+                        }
+
+                        console.log(result);
+
+                        var number = 1;
+
+                        // Loop over each item in result and put it into the instagramItems array
+                        $.each(result.data, function(index, value) {
+
+                            if(instagramOffset > 0) {
+                                instagramOffset--;
+                                return true;
+                            }
+
+                            csv = csv + value.id + ',' + value.link + ',' + value.images.thumbnail.url + ',' + value.created_time + ',"' + value.caption.text + '"';
+                            csv = csv + "/n";
+
+                            var row = '<tr>';
+
+                            row = row + '<td>' + number + '</td>';
+                            row = row + '<td><a href="' + value.link + '">' + value.id + '</a></td>';
+                            row = row + '<td><img src="' + value.images.thumbnail.url + '" /></td>';
+                            row = row + '<td>' + value.created_time + '</td>';
+                            row = row + '<td>' + value.caption.text + '</td>';
+                            row = row + '</tr>';
+
+                            number++;
+
+                            $('#results').append(row);
+
+                            instagramItems.push(value);
+                        });
+
+                        // Run the callback
+                        callback();
+                    })
+                    // Error callback
+                    .fail(function(result) {
+                        console.log('Error, failed to get Instagram feed: ', result);
+                        return;
+                    });
+        }
+
+        fetchInstagramFeed(done);
+
+        function done() {
+            console.log(csv);
+            $('body').html(csv);
+            console.log(instagramItems);
+        }
+
+
+    </script>
+</head>
+<body>
+<table id="results" border="1">
+    <tr>
+        <th>Num</th>
+        <th>ID</th>
+        <th>Thumb</th>
+        <th>Created</th>
+        <th>Caption</th>
+    </tr>
+</table>
+
+</body>
+</html>
