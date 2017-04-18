@@ -76,15 +76,13 @@ var adventure = {
 
     showHideNextPrevDayButtons: function() {
 
-        // console.log(adventure.scrollPerc);
-
-        if(adventure.scrollPerc < 0.02) {
+        if(adventure.scrollPerc < 0.02 && gps.currentDay != 1) {
             $('#back').addClass('day');
         } else {
             $('#back').removeClass('day');
         }
 
-        if(adventure.scrollPerc > 0.98) {
+        if(adventure.scrollPerc > 0.98 && gps.currentDay != adventure.days.length) {
             $('#forward').addClass('day');
         } else {
             $('#forward').removeClass('day');
@@ -135,6 +133,51 @@ var adventure = {
 
     },
 
+    prevDay: function() {
+
+        gps.currentDay = parseInt(gps.currentDay) - 1;
+
+        // remove current day lines
+        for (i = 0; i <= gps.count -1; i++) {
+            gps.hideLine(i);
+        }
+
+        // remove previous days single line
+        adventure.days[gps.currentDay].line.setMap(null);
+
+        async.series([
+                function(callback){
+
+                    gps.callback = callback;
+                    gps.data = [];
+                    gps.dayCounts = {};
+                    gps.load();
+
+                },
+                function(callback){
+
+                    gps.cameraTrack = [];
+                    gps.setCameraTrack();
+
+                    $('#inner-images').html('');
+
+                    image.callback = callback;
+                    image.images = [];
+                    image.clusters = [];
+                    image.add();
+
+                    adventure.animating = false;
+
+                    document.body.scrollTop = document.documentElement.scrollTop = document.body.scrollHeight;
+
+                },
+            ],
+            function(err, results){
+                // done
+            });
+
+    },
+
     showStats: function() {
 
         var info = {
@@ -142,6 +185,7 @@ var adventure = {
             Date: adventure.day + '/' + adventure.month + '/' + adventure.year,
             Average_speed: gps.avgSpeed + 'km/h',
             Distance: gps.formattedDistance(),
+            Total_distance: gps.formattedTotalDistance(),
             Time: gps.getTime(),
         };
 
@@ -177,7 +221,11 @@ $(document).ready(function() {
     $('.arrow').click(function() {
 
         if($(this).hasClass('day')) {
-            return adventure.nextDay();
+            if($(this).attr('id') == 'forward') {
+                return adventure.nextDay();
+            } else {
+                return adventure.prevDay();
+            }
         }
 
         // Don't run whilst already animating

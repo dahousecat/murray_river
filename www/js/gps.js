@@ -90,16 +90,8 @@ var gps = {
 
             });
 
-            console.log(gps.dayCounts, 'dayCounts');
-
             gps.trimDate();
-
-            console.log(gps.data.length, 'trimDate');
-
             gps.trimDistance();
-
-            console.log(gps.data.length, 'trimDistance');
-
             gps.setTotals();
 
         });
@@ -165,6 +157,12 @@ var gps = {
 
     setTotals: function() {
 
+        if(typeof adventure.days[gps.currentDay] == 'undefined') {
+            adventure.days[gps.currentDay] = {};
+        }
+
+        gps.totalDistanceMeters = 0;
+
         // Distance
         for (i = 1; i <= gps.count -1; i++) {
             gps.totalDistanceMeters += gps.data[i].distance;
@@ -178,6 +176,9 @@ var gps = {
 
         var distKm = gps.totalDistanceMeters / 1000;
         var timeHours = gps.totalTimeSeconds / 60 / 60;
+
+        adventure.days[gps.currentDay].distKm = distKm;
+        adventure.days[gps.currentDay].timeHours = timeHours;
 
         gps.avgSpeed = Math.round((distKm / timeHours) * 10) / 10;
 
@@ -351,9 +352,9 @@ var gps = {
 
     drawDayLine: function() {
 
-        if(typeof adventure.days[gps.currentDay] == 'undefined') {
-            adventure.days[gps.currentDay] = {};
-        }
+        // if(typeof adventure.days[gps.currentDay] == 'undefined') {
+        //     adventure.days[gps.currentDay] = {};
+        // }
 
         if(typeof adventure.days[gps.currentDay].line == 'undefined') {
 
@@ -412,6 +413,24 @@ var gps = {
             formattedDistance = Math.round(gps.distanceMeters) + 'm';
         }
         return formattedDistance;
+
+    },
+
+    formattedTotalDistance: function(){
+
+        var totalKms = 0
+
+        for (i = 1; i <= adventure.days.length -1; i++) {
+            if(typeof adventure.days[i].distKm != 'undefined' && i < gps.currentDay) {
+                console.log(adventure.days[i].distKm);
+                totalKms += adventure.days[i].distKm;
+            }
+        }
+
+        totalKms += (gps.distanceMeters / 1000);
+        totalKms = Math.round(totalKms);
+
+        return totalKms + 'km';
 
     },
 };

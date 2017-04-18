@@ -558,8 +558,6 @@ var image = {
 
         minDist = typeof minDist == 'undefined' ? 1 : minDist;
 
-        console.log(this.activeImageIndex, 'activeImageIndex');
-
         // If we know current then just return the next image
         if(this.activeImageIndex !== false) {
             return typeof image.images[this.activeImageIndex + 1] == 'undefined' ? false : image.images[this.activeImageIndex + 1];

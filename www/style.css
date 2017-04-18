@@ -119,9 +119,8 @@
     top: -1rem;
 }
 .arrow.day {
-    width: 5.6rem;
+    width: 8rem;
 }
-
 .arrow span {
     width: 0;
     overflow: hidden;
@@ -132,6 +131,7 @@
     width: 100px;
     padding: 0.4rem;
     font-family: sans-serif;
+    position: relative;
 }
 
 #back {
@@ -143,6 +143,9 @@
 }
 #back:hover::before {
     border-right: 2rem solid grey;
+}
+#back span {
+    margin-left: 1rem;
 }
 #forward {
     right: 1.8rem;
