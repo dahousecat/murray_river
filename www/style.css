@@ -1,8 +1,7 @@
-#debug {
+#stats {
     position: fixed;
     top: 10rem;
     left: 0.7rem;
-    width: 8rem;
     background-color: white;
     z-index: 12;
     padding: 1rem;
@@ -78,6 +77,16 @@
     /*top: 1rem;*/
     /*bottom: 1rem;*/
 }
+/*.image-wrap.active-image::after {*/
+    /*content: '';*/
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*bottom: 0;*/
+    /*right: 0;*/
+    /*width: 20px;*/
+    /*background-color: white;*/
+    /*height: 100%;*/
+/*}*/
 .image {
     width: auto;
     height: 100%;
@@ -95,6 +104,7 @@
     top: 4.8rem;
     cursor: pointer;
     z-index: 13;
+    transition: width 400ms;
 }
 .arrow:hover {
     background: grey;
@@ -108,6 +118,9 @@
     position: absolute;
     top: -1rem;
 }
+.arrow.day {
+    width: 5.6rem;
+}
 
 .arrow span {
     width: 0;
@@ -117,6 +130,8 @@
 
 .day.arrow span {
     width: 100px;
+    padding: 0.4rem;
+    font-family: sans-serif;
 }
 
 #back {

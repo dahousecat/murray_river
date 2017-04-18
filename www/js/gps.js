@@ -7,6 +7,8 @@ var gps = {
     count: 0,
     index: 0,
     distanceMeters: 0,
+    totalDistanceMeters: 0,
+    totalTimeSeconds: 0,
     callback: null,
     savedCallback: false,
     data: [],
@@ -15,6 +17,7 @@ var gps = {
     numDays: 28,
     currentDayToLoad: 0,
     currentDay: 1,
+    dayCounts: {},
 
     // load: function(){
     //
@@ -54,6 +57,13 @@ var gps = {
                 adventure.day = day;
                 adventure.month = month;
                 adventure.year = year;
+                var dateStr = day + '-' + month + '-' + year;
+
+                if(typeof gps.dayCounts[dateStr] == 'undefined') {
+                    gps.dayCounts[dateStr] = 1;
+                } else {
+                    gps.dayCounts[dateStr]++;
+                }
 
                 var lat = parseFloat($(this).attr('lat'));
                 var lng = parseFloat($(this).attr('lon'));
@@ -66,7 +76,7 @@ var gps = {
 
                 gps.data.push({
                     ts: ts,
-                    date: day + '-' + month + '-' + year,
+                    date: dateStr,
                     time: hour + ':' + min,
                     lat: lat,
                     lng: lng,
@@ -78,13 +88,38 @@ var gps = {
 
             });
 
-            gps.trim();
+            gps.trimDate();
+            gps.trimDistance();
+            gps.setTotals();
 
         });
 
     },
 
-    trim: function(callback) {
+    trimDate: function() {
+
+        // Find day with most data
+        var mostDataPoints = 0;
+        var dateToUse;
+
+        $.each(gps.dayCounts, function(date, numDataPoints) {
+            if(numDataPoints > mostDataPoints) {
+                mostDataPoints = numDataPoints;
+                dateToUse = date;
+            }
+        });
+
+        // Now remove all data with a date that is not correct
+        var i = gps.data.length;
+        while (i--) {
+            if(gps.data[i].date != dateToUse) {
+                gps.data.splice(i, 1);
+            }
+        }
+
+    },
+
+    trimDistance: function(callback) {
 
         // Trim off start
         for (i = 1; i <= gps.count -1; i++) {
@@ -115,6 +150,26 @@ var gps = {
         gps.count = gps.data.length;
 
         utils.callback(this.callback);
+
+    },
+
+    setTotals: function() {
+
+        // Distance
+        for (i = 1; i <= gps.count -1; i++) {
+            gps.totalDistanceMeters += gps.data[i].distance;
+        }
+
+        // Time
+        var startTime = new Date(gps.data[0].ts);
+        var endTime = new Date(gps.data[gps.data.length - 1].ts);
+
+        gps.totalTimeSeconds = (endTime.getTime() - startTime.getTime()) / 1000;
+
+        var distKm = gps.totalDistanceMeters / 1000;
+        var timeHours = gps.totalTimeSeconds / 60 / 60;
+
+        gps.avgSpeed = Math.round((distKm / timeHours) * 10) / 10;
 
     },
 
@@ -286,6 +341,10 @@ var gps = {
 
     drawDayLine: function() {
 
+        if(typeof adventure.days[gps.currentDay] == 'undefined') {
+            adventure.days[gps.currentDay] = {};
+        }
+
         if(typeof adventure.days[gps.currentDay].line == 'undefined') {
 
             var dayPath = [];
@@ -317,6 +376,32 @@ var gps = {
         if(typeof adventure.days[gps.currentDay].line != 'undefined') {
             adventure.days[gps.currentDay].line.setMap(null);
         }
+
+    },
+
+    getTime: function(index){
+
+        index = typeof index == 'undefined' ? gps.index : index;
+
+        // If the current index is undefined return the time of the previous index
+        if(typeof gps.data[index] == 'undefined') {
+            index--;
+            return gps.getTime(index);
+        } else {
+            return gps.data[index].time;
+        }
+
+    },
+
+    formattedDistance: function(){
+
+        var formattedDistance;
+        if(gps.distanceMeters > 1000) {
+            formattedDistance = Math.round(gps.distanceMeters / 1000) + 'km';
+        } else {
+            formattedDistance = Math.round(gps.distanceMeters) + 'm';
+        }
+        return formattedDistance;
 
     },
 };

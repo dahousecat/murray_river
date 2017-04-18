@@ -3,11 +3,13 @@ var adventure = {
     pxPerGpsPoint: 2,
     animating: false,
     days: [],
+    $stats: null,
 
     init: function() {
 
-        adventure.day = utils.getParameterByName('day');
-        adventure.day = adventure.day == null ? 1 : adventure.day;
+        gps.currentDay = utils.getParameterByName('day');
+        gps.currentDay = gps.currentDay == null ? 1 : gps.currentDay;
+        adventure.$stats = $('#stats');
 
         async.series([
                 function(callback){
@@ -30,11 +32,12 @@ var adventure = {
             ],
             function(err, results){
                 // done
+                adventure.showStats();
             });
 
     },
 
-    setDimensions: function(){
+    setDimensions: function() {
 
         this.windowHeight = $(window).height();
         this.docHeight = gps.count * this.pxPerGpsPoint;
@@ -60,7 +63,7 @@ var adventure = {
 
         $("html, body").animate({ scrollTop: scrollTop }, {
             duration: duration,
-            complete: function(){
+            complete: function() {
                 if($(this).prop('tagName') == 'BODY') {
                     utils.callback(callback);
                 }
@@ -71,7 +74,7 @@ var adventure = {
 
     },
 
-    showHideNextPrevDayButtons: function(){
+    showHideNextPrevDayButtons: function() {
 
         // console.log(adventure.scrollPerc);
 
@@ -90,6 +93,8 @@ var adventure = {
     },
 
     nextDay: function() {
+
+        console.log('nextDay');
 
         // replace current day with 1 line
         gps.drawDayLine();
@@ -131,9 +136,27 @@ var adventure = {
 
     },
 
+    showStats: function() {
+
+        var info = {
+            Day: gps.currentDay,
+            Date: adventure.day + '/' + adventure.month + '/' + adventure.year,
+            Average_speed: gps.avgSpeed + 'km/h',
+            Distance: gps.formattedDistance(),
+            Time: gps.getTime(),
+        };
+
+        var html = '';
+        $.each(info, function (key, val) {
+            html = html + key.replace('_', ' ') + ': ' + val + '<br>';
+        });
+        adventure.$stats.html(html);
+
+    }
+
 };
 
-$(window).scroll(function(){
+$(window).scroll(function() {
 
     adventure.scrollPerc = $(window).scrollTop() / (adventure.docHeight - adventure.windowHeight);
     gps.index = Math.round( gps.count * adventure.scrollPerc );
@@ -143,22 +166,24 @@ $(window).scroll(function(){
     map.setCentre();
 
     image.setScrollPosition();
+    //image.setImageSizes();
 
-    adventure.showHideNextPrevDayButtons()
+    adventure.showHideNextPrevDayButtons();
+    adventure.showStats();
 
 });
 
-$(document).ready(function(){
+$(document).ready(function() {
 
-    $('.arrow').click(function(){
+    $('.arrow').click(function() {
 
         if($(this).hasClass('day')) {
-            adventure.nextDay();
+            return adventure.nextDay();
         }
 
         // Don't run whilst already animating
         if(adventure.animating) {
-            // console.log('reject click');
+             // console.log('reject click');
             return;
         }
 
@@ -167,15 +192,17 @@ $(document).ready(function(){
 
         var img = $(this).attr('id') == 'forward' ? image.findNext() : image.findPrev();
 
-        // console.log(img, 'img');
+         // console.log(img, 'img');
 
         // Make sure we are not already at the end
         if(!img) {
 
-            // console.log('no image, scroll to end');
+             console.log('no image, scroll to end');
 
             // If no image scroll right to the end or start of the track
             var scrollToIndex = $(this).attr('id') == 'forward' ? gps.count : 0;
+
+            // console.log('scrollToIndex: ' + scrollToIndex);
 
             async.series([
                     function(callback){

@@ -14,7 +14,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |node_config|
   node_config.vm.provision :shell, path: "setup/bootstrap.sh"
   node_config.vm.provision :shell, path: "setup/startup.sh", run: "always"
 
-  node_config.vm.network :private_network, ip: "192.168.56.101"
+  node_config.vm.network :private_network, ip: "192.168.56.105"
   node_config.vm.network :forwarded_port, guest: 80, host: 8081
 
   node_config.vm.provider :virtualbox do |vb|

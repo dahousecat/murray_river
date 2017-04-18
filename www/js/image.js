@@ -8,6 +8,8 @@ var image = {
     callback: null,
     clusters: [],
     duration: 800,
+    maxImageHeight: 600,
+    iconHeight: 96,
 
     add: function(){
 
@@ -105,7 +107,7 @@ var image = {
                 imgStr = imgStr + '</div>';
                 image.$imageWrap = $(imgStr);
                 image.$image = image.$imageWrap.find('.image');
-                image.$imageWrap.css({height: 96});
+                image.$imageWrap.css({height: self.iconHeight});
 
                 $('#inner-images').append(image.$imageWrap);
 
@@ -419,8 +421,14 @@ var image = {
             height = img.$image[0].naturalHeight;
         }
 
+        if(this.maxImageHeight < height) {
+            height = this.maxImageHeight;
+        }
+
         var aspRatio = img.$image[0].naturalWidth / img.$image[0].naturalHeight;
-        var new_width = height * aspRatio;
+
+        // Sometimes the white border box is not quite wide enough if we don't add 10
+        var new_width = (height * aspRatio) + 10;
 
         var border = ($(window).height() - height) / 2;
 
@@ -494,9 +502,63 @@ var image = {
 
     },
 
+    setImageSizes: function() {
+
+        var screenCentre = $(window).width() / 2;
+
+        for (var i = 0; i <= image.images.length -1; i++) {
+
+            var img = image.images[i];
+            var startScale = img.scale;
+
+            // var distance = Math.abs(img.index - gps.index);
+            //
+            // if(distance < 100) {
+            //     img.scale = 100 - distance;
+            // } else {
+            //     img.scale = 1;
+            // }
+
+            var imgCentre = img.$image.offset().left + (img.width / 2)
+
+            if(imgCentre < screenCentre) {
+                var imgDistFromCentre = screenCentre - imgCentre;
+            } else {
+                var imgDistFromCentre = imgCentre - screenCentre;
+            }
+
+            var scaleDistLimit = 200;
+
+            if(imgDistFromCentre < scaleDistLimit) {
+                img.scale = (scaleDistLimit - imgDistFromCentre) / (scaleDistLimit / 1.2);
+                var zindex = 2;
+            } else {
+                img.scale = 1;
+                var zindex = 1;
+            }
+
+            if(img.scale < 1) {
+                img.scale = 1;
+            }
+
+            var growth = (img.width * img.scale) - img.width;
+
+            if(startScale != img.scale) {
+                img.$imageWrap.css({
+                    height: image.iconHeight * img.scale,
+                    marginRight: growth / 2,
+                    zIndex: zindex,
+                });
+            }
+        }
+
+    },
+
     findNext: function(minDist) {
 
         minDist = typeof minDist == 'undefined' ? 0 : minDist;
+
+        console.log(this.activeImageIndex, 'activeImageIndex');
 
         // If we know current then just return the next image
         if(this.activeImageIndex !== false) {
