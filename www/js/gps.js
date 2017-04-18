@@ -44,6 +44,8 @@ var gps = {
             var $xml = $(xml);
             var prevLatLng;
 
+            console.log($xml.find('trkpt'), 'gps data');
+
             $xml.find('trkpt').each(function(index) {
 
                 var ts = Date.parse($(this).find('time').text());
@@ -88,8 +90,16 @@ var gps = {
 
             });
 
+            console.log(gps.dayCounts, 'dayCounts');
+
             gps.trimDate();
+
+            console.log(gps.data.length, 'trimDate');
+
             gps.trimDistance();
+
+            console.log(gps.data.length, 'trimDistance');
+
             gps.setTotals();
 
         });

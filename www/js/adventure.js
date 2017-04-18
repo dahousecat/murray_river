@@ -94,21 +94,20 @@ var adventure = {
 
     nextDay: function() {
 
-        console.log('nextDay');
-
         // replace current day with 1 line
         gps.drawDayLine();
         for (i = 0; i <= gps.count -1; i++) {
             gps.hideLine(i);
         }
 
-        gps.currentDay = gps.currentDay + 1;
+        gps.currentDay = parseInt(gps.currentDay) + 1;
 
         async.series([
                 function(callback){
 
                     gps.callback = callback;
                     gps.data = [];
+                    gps.dayCounts = {};
                     gps.load();
 
                 },

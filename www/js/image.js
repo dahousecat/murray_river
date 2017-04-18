@@ -556,7 +556,7 @@ var image = {
 
     findNext: function(minDist) {
 
-        minDist = typeof minDist == 'undefined' ? 0 : minDist;
+        minDist = typeof minDist == 'undefined' ? 1 : minDist;
 
         console.log(this.activeImageIndex, 'activeImageIndex');
 
@@ -576,7 +576,7 @@ var image = {
 
     findPrev: function(minDist){
 
-        minDist = typeof minDist == 'undefined' ? 0 : minDist;
+        minDist = typeof minDist == 'undefined' ? 1 : minDist;
 
         // If we know current then just return the prev image
         if(this.activeImageIndex) {
